@@ -1,0 +1,61 @@
+{
+  "services": [
+    {
+      "name": "EC2",
+      "queries": [
+        {
+          "description": "Instances types & IP addresses",
+          "command": "aws ec2 describe-instances --query 'Reservations[].Instances[].{ Id:InstanceId, Name: Tags[?Key==`Name`].Value | [0], Type:InstanceType, PrivateIpAddress:PrivateIpAddress, PublicIpAddress:PublicIpAddress }' --output json"
+        },
+        {
+          "description": "Instances VPCs & subnets",
+          "command": "aws ec2 describe-instances --query 'Reservations[].Instances[].{ Id:InstanceId, Name: Tags[?Key==`Name`].Value | [0], VPC:VpcId, Subnet:SubnetId }' --output json"
+        },
+        {
+          "description": "Instances security groups",
+          "command": "aws ec2 describe-instances --query 'Reservations[].Instances[].{ Id:InstanceId, Name: Tags[?Key==`Name`].Value | [0], SecurityGroupIds:SecurityGroups[*].GroupId, SecurityGroupNames:SecurityGroups[*].GroupName }' --output json"
+        }
+      ]
+    },
+    {
+      "name": "RDS",
+      "queries": [
+        {
+          "description": "DB instances",
+          "command": "aws rds describe-db-instances --query 'DBInstances[].{ Id:DBInstanceIdentifier, Name: DBInstanceIdentifier, DBInstanceClass:DBInstanceClass, Engine:Engine, EngineVersion:EngineVersion, DBInstanceStatus:DBInstanceStatus, Storage:AllocatedStorage }' --output json"
+        },
+        {
+          "description": "DB instances addresses",
+          "command": "aws rds describe-db-instances --query 'DBInstances[].{ Id:DBInstanceIdentifier, Name: DBInstanceIdentifier, Endpoint:join(`:`, [Endpoint.Address, to_string(Endpoint.Port)]) }' --output json"
+        }
+      ]
+    },
+    {
+      "name": "Rout53",
+      "queries": [
+        {
+          "description": "Hosted zones",
+          "command": "aws route53 list-hosted-zones --query 'HostedZones[].{ Id:Id, Name:Name, ResourceRecordSetCount:ResourceRecordSetCount }' --output json"
+        }
+      ]
+    },
+    {
+      "name": "S3",
+      "queries": [
+        {
+          "description": "Bucket contents",
+          "command": "aws s3 ls"
+        }
+      ]
+    },
+    {
+      "name": "SNS",
+      "queries": [
+        {
+          "description": "Subscriptions",
+          "command": "aws sns list-subscriptions --query 'Subscriptions[*]'"
+        }
+      ]
+    }
+  ]
+}

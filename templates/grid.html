@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>{TITLE}</title>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script type="text/javascript" src="https://rawgit.com/vitmalina/w2ui/master/dist/w2ui.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="https://rawgit.com/vitmalina/w2ui/master/dist/w2ui.min.css" />
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      color: #000;
+      background-color: #fff;
+    }
+
+    #grid {
+      height: 100vh;
+      width: 100vw;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="grid"></div>
+  <script>
+    $('#grid').w2grid({
+      name: 'grid',
+      header: '{TITLE}',
+      columns: {COLUMNS},
+      records: {RECORDS},
+      show: { footer: true, header: true, lineNumbers: true, toolbar: true },
+    });
+  </script>
+</body>
+
+</html>
