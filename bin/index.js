@@ -1,4 +1,4 @@
 #!/usr/bin/env node
-import program from '../app/program.js';
+import run from '../app/program.js';
 
-program.run(process.argv);
+run(process.argv);

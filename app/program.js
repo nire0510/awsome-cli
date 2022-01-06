@@ -38,7 +38,7 @@ function browse(results, title) {
   execute(`open ${filepath}`);
 }
 
-(async () => {
+export default async function run() {
   try {
     const { services } = JSON.parse(fs.readFileSync('./data/services.json'));
     const { service } = await prompt('service', 'AWS service?', services.map((s) => s.name).sort());
@@ -65,4 +65,4 @@ function browse(results, title) {
     console.error('🐞 An error has occurred');
     fs.writeFileSync('./error.log', JSON.stringify(error));
   }
-})();
+};
