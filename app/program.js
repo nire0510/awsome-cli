@@ -26,21 +26,23 @@ function execute(command, message) {
 }
 
 function browse(results, title) {
-  const columns = Object.keys(results[0]).map((key) => ({ field: key, text: key, sortable: true }));
-  const filepath = path.resolve(os.tmpdir(), `${(Math.random() + 1).toString(36).substring(7)}.html`);
-  const template = fs.readFileSync('./templates/grid.html').toString();
-  const html = template
-    .replace(/{TITLE}/g, title)
-    .replace('{COLUMNS}', JSON.stringify(columns))
-    .replace('{RECORDS}', JSON.stringify(results));
+  if (Array.isArray(results) && results.length > 0) {
+    const columns = Object.keys(results[0]).map((key) => ({ field: key, text: key, sortable: true }));
+    const filepath = path.resolve(os.tmpdir(), `${(Math.random() + 1).toString(36).substring(7)}.html`);
+    const template = fs.readFileSync(path.join(process.cwd(), './templates/grid.html')).toString();
+    const html = template
+      .replace(/{TITLE}/g, title)
+      .replace('{COLUMNS}', JSON.stringify(columns))
+      .replace('{RECORDS}', JSON.stringify(results));
 
-  fs.writeFileSync(filepath, html);
-  execute(`open ${filepath}`);
+    fs.writeFileSync(filepath, html);
+    execute(`open ${filepath}`);
+  }
 }
 
 export default async function run() {
   try {
-    const { services } = JSON.parse(fs.readFileSync('./data/services.json'));
+    const { services } = JSON.parse(fs.readFileSync(path.join(process.cwd(), './data/services.json')));
     const { service } = await prompt('service', 'AWS service?', services.map((s) => s.name).sort());
     const queries = services.find((s) => s.name === service).queries;
     const { query } = await prompt('query', 'Service query?', queries.map((q) => q.description).sort());
@@ -50,19 +52,25 @@ export default async function run() {
     const command = services.find((s) => s.name === service).queries.find((q) => q.description === query).command;
     const results = await execute(`${command} --profile=${profile}`, 'Querying AWS...');
 
-    switch (output) {
-      case 'Web':
-        browse(JSON.parse(results), `${profile} > ${service} > ${query}`);
-        break;
-      case 'Terminal':
-      default:
-        console.log();
-        console.table(JSON.parse(results));
-        break;
+    if (Array.isArray(results) && results.length > 0) {
+      switch (output) {
+        case 'Web':
+          browse(JSON.parse(results), `${profile} > ${service} > ${query}`);
+          break;
+        case 'Terminal':
+        default:
+          console.log();
+          console.table(JSON.parse(results));
+          break;
+      }
+    }
+    else {
+      console.log();
+      console.log('😕 No results found.');
     }
   }
   catch (error) {
     console.error('🐞 An error has occurred');
-    fs.writeFileSync('./error.log', JSON.stringify(error));
+    fs.writeFileSync(path.join(process.cwd(), './error.log'), JSON.stringify(error));
   }
 };

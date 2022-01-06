@@ -1,6 +1,28 @@
 {
   "services": [
     {
+      "name": "API Gateway",
+      "queries": [
+        {
+          "description": "API gateways",
+          "command": "aws apigateway get-rest-apis --query 'items[].{ Id:id, Name:name, Description:description }' --output json"
+        },
+        {
+          "description": "API gateway domain names",
+          "command": "aws apigateway get-domain-names --query 'items[].{ DomainName:domainName, RegionalDomainName:regionalDomainName }' --output json"
+        }
+      ]
+    },
+    {
+      "name": "Amplify",
+      "queries": [
+        {
+          "description": "Amplify applications gateways",
+          "command": "aws amplify list-apps --output json"
+        }
+      ]
+    },
+    {
       "name": "EC2",
       "queries": [
         {
