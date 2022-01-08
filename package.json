@@ -1,6 +1,6 @@
 {
   "name": "@nire0510/awsome-cli",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "A user friendly view for common AWS CLI commands",
   "main": "./bin/index.js",
   "preferGlobal": true,

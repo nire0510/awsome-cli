@@ -4,7 +4,7 @@ const fs = require('fs');
 let data;
 
 beforeAll(() => {
-  data = JSON.parse(fs.readFileSync('./data/services.json'));
+  data = JSON.parse(fs.readFileSync('./app/data/services.json'));
 });
 
 test('services file is an object', () => {
