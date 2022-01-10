@@ -5,6 +5,6 @@ export function browse(filepath) {
   shell.execute(`open ${filepath}`);
 }
 
-export function prompt(name, message, choices) {
-  return inquirer.prompt([{ type: 'list', name, message, choices }]);
+export function prompt(type, name, message, choices, fallback) {
+  return inquirer.prompt([{ type, name, message, choices, default: fallback }]);
 }
