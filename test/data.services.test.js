@@ -7,7 +7,7 @@ beforeAll(() => {
   data = JSON.parse(fs.readFileSync('./app/data/services.json'));
 });
 
-test('services file is an object', () => {
+test('services file is a JSON object', () => {
   expect(typeof data).toBe('object');
 });
 
@@ -29,4 +29,10 @@ test('each service query has a description and a command', () => {
 
 test('each service query command starts with aws', () => {
   expect(data.services.every((service) => service.queries.every((query) => query.command.startsWith('aws ')))).toBeTruthy();
+});
+
+test('each service with variables has a variables array', () => {
+  const queriesWithVariables = data.services.reduce((a, c) => a.concat(c.queries.filter((q) => /\{\w+\}/.test(q.command))), []);
+
+  expect(queriesWithVariables.every((q) => Array.isArray(q.variables) && q.variables.length)).toBeTruthy();
 });

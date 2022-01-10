@@ -1,6 +1,15 @@
 {
   "services": [
     {
+      "name": "Amplify",
+      "queries": [
+        {
+          "description": "Amplify applications gateways",
+          "command": "aws amplify list-apps --output json"
+        }
+      ]
+    },
+    {
       "name": "API Gateway",
       "queries": [
         {
@@ -14,11 +23,22 @@
       ]
     },
     {
-      "name": "Amplify",
+      "name": "Athena",
       "queries": [
         {
-          "description": "Amplify applications gateways",
-          "command": "aws amplify list-apps --output json"
+          "description": "Data catalogs",
+          "command": "aws athena list-data-catalogs --query 'DataCatalogsSummary[]' --output json"
+        },
+        {
+          "description": "Databases",
+          "command": "aws athena list-databases --catalog-name {CatalogName} --query 'DatabaseList[].{ Name:Name, Description:Description }' --output json",
+          "variables": [
+            {
+              "name": "CatalogName",
+              "description": "Catalog name?",
+              "type": "text"
+            }
+          ]
         }
       ]
     },

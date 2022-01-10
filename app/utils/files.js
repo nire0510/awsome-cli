@@ -35,13 +35,18 @@ export function download(url, destination) {
 
 export function exportHtml(source, results, title) {
   if (Array.isArray(results) && results.length > 0) {
-    const columns = Object.keys(results[0]).map((key) => ({ field: key, text: key, sortable: true }));
+    const columns = Object.keys(results[0]).map((key) => ({ field: key, resizable: true, sortable: true, text: key }));
     const destination = generateTempFile('html');
+    const searches = Object.keys(results[0]).map((key) => ({ field: key, label: key, type: 'text' }));
     const template = fs.readFileSync(source).toString();
     const html = template
       .replace(/{TITLE}/g, title)
       .replace('{COLUMNS}', JSON.stringify(columns))
-      .replace('{RECORDS}', JSON.stringify(results));
+      .replace('{RECORDS}', JSON.stringify(results.map((r, index) => ({
+        recid: index,
+        ...r,
+      }))))
+      .replace('{SEARCHES}', JSON.stringify(searches));
 
     fs.writeFileSync(destination, html);
 
