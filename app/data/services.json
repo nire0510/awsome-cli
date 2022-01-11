@@ -43,6 +43,42 @@
       ]
     },
     {
+      "name": "CodeDeploy",
+      "queries": [
+        {
+          "description": "Applications",
+          "command": "aws deploy list-applications --query 'applications[].{ Name:@ }' --output json"
+        },
+        {
+          "description": "Deployment groups",
+          "command": "aws deploy list-deployment-groups --application-name {ApplicationName} --query 'deploymentGroups[].{ Name:@ }' --output json",
+          "variables": [
+            {
+              "name": "ApplicationName",
+              "description": "Application name?",
+              "type": "text"
+            }
+          ]
+        },
+        {
+          "description": "Deployments",
+          "command": "aws deploy list-deployments --application-name {ApplicationName} --deployment-group-name {DeploymentGroupName} --query 'deployments[].{ Name:@ }' --output json",
+          "variables": [
+            {
+              "name": "ApplicationName",
+              "description": "Application name?",
+              "type": "text"
+            },
+            {
+              "name": "DeploymentGroupName",
+              "description": "Deployment group name?",
+              "type": "text"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "name": "EC2",
       "queries": [
         {

@@ -13,12 +13,12 @@ export default async function run(args) {
     const queries = services.find((s) => s.name === service).queries;
     const { query } = await ui.prompt('list', 'query', 'Service query?', queries.map((q) => q.description).sort());
     const variables = queries.find((q) => q.description === query).variables || [];
-    const values = await Promise.all(variables.map((v) => ui.prompt(v.type, v.name, v.description, undefined)));
+    const values = await variables.reduce((a, c) => a.then((results) => ui.prompt(c.type, c.name, c.description, undefined).then((r) => ({ ...r, ...results }))), Promise.resolve({}));
     const profiles = (await shell.execute('aws configure list-profiles', 'Loading profiles...')).split('\n').sort().filter((p) => p);
     const { profile } = await ui.prompt('list', 'profile', 'AWS profile?', profiles);
     const { display } = await ui.prompt('list', 'display', 'Query output?', ['Terminal', 'Web']);
     const command = services.find((s) => s.name === service).queries.find((q) => q.description === query).command;
-    const output = await shell.execute(`${values.reduce((a, c) => command.replace(`{${Object.keys(c)[0]}}`, `${Object.values(c)[0]}`), command)} --profile=${profile}`, 'Querying AWS...');
+    const output = await shell.execute(`${Object.keys(values).reduce((a, c) => a.replace(`{${c}}`, `${values[c]}`), command)} --profile=${profile}`, 'Querying AWS...');
     const results = output && JSON.parse(output);
 
     // download the latest version of services.json:

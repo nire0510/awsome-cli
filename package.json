@@ -1,7 +1,12 @@
 {
   "name": "@nire0510/awsome-cli",
-  "version": "1.0.6",
-  "description": "Get information from your AWS accounts easily",
+  "version": "1.0.7",
+  "homepage": "https://github.com/nire0510/awsome-cli/",
+  "license": "GPL-3.0",
+  "description": "Get information from your AWS accounts like a boss",
+  "bugs": {
+    "url": "https://github.com/nire0510/awsome-cli/issues"
+  },
   "main": "./bin/index.js",
   "preferGlobal": true,
   "type": "module",
@@ -10,7 +15,8 @@
   },
   "scripts": {
     "test": "jest",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "start": "node bin/index.js"
   },
   "keywords": [
     "aws",
@@ -18,7 +24,11 @@
     "cli"
   ],
   "author": "Nir Elbaz<@nire0510>",
-  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nire0510/awsome-cli"
+  },
+  "readme": "README.md",
   "dependencies": {
     "inquirer": "^8.2.0",
     "ora": "^6.0.1"
