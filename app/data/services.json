@@ -75,6 +75,17 @@
               "type": "text"
             }
           ]
+        },
+        {
+          "description": "Deployment info",
+          "command": "aws deploy get-deployment --deployment-id {DeploymentId} --query 'deploymentInfo.[{ DeploymentId:deploymentId, ApplicationName:applicationName, DeploymentGroupName:deploymentGroupName, Status:status, CreateTime:createTime, CompleteTime:completeTime }]' --output json",
+          "variables": [
+            {
+              "name": "DeploymentId",
+              "description": "Deployment Id?",
+              "type": "text"
+            }
+          ]
         }
       ]
     },

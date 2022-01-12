@@ -57,5 +57,5 @@ export function exportHtml(source, results, title) {
 }
 
 export function generateTempFile(extension = 'txt') {
-  return path.resolve(os.tmpdir(), `${(Math.random() + 1).toString(36).substring(7)}.${extension}`)
+  return path.resolve(os.tmpdir(), `${(Math.random() + 1).toString(36).substring(7)}.${extension}`);
 }
