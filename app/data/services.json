@@ -47,7 +47,22 @@
       "queries": [
         {
           "description": "Distributions",
-          "command": "aws cloudfront list-distributions --query 'DistributionList.Items[*].{ Id:Id, Status:Status, DomainName:DomainName, Enabled:Enabled }' --output json"
+          "command": "aws cloudfront list-distributions --query 'DistributionList.Items[*].{ Id:Id, DomainName:DomainName, Enabled:Enabled, Status:Status }' --output json"
+        },
+        {
+          "description": "Distribution aliases",
+          "command": "aws cloudfront list-distributions --query 'DistributionList.Items[*].{ Id:Id, DomainName:DomainName, Aliases:Aliases.Items }' --output json"
+        },
+        {
+          "description": "Distribution invalidations",
+          "command": "aws cloudfront list-invalidations --distribution-id {DistributionId} --query 'InvalidationList.Items[*]' --output json",
+          "variables": [
+            {
+              "name": "DistributionId",
+              "description": "Distribution Id?",
+              "type": "text"
+            }
+          ]
         }
       ]
     },
