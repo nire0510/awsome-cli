@@ -1,4 +1,5 @@
 import getv from 'getv';
+import ora from 'ora';
 import config from '../config/default.js';
 import Display from '../models/display.js';
 import * as files from '../utils/files.js';
@@ -9,15 +10,19 @@ import Service from '../models/service.js';
 import * as shell from '../utils/shell.js';
 import * as ui from '../utils/ui.js';
 
-export async function run(options) {
+export async function run(options, predefinedServices) {
   try {
     if (options.update) {
+      const spinner = ora();
+
       spinner.start('Updating queries from repository...');
       await Service.update();
       spinner.stop();
     }
 
-    const services = await Service.getAll() || [];
+    const services = Array.isArray(predefinedServices) && predefinedServices.length ?
+      predefinedServices :
+      await Service.getAll() || [];
     const { serviceName } = await ui.prompt('list', 'serviceName', 'AWS service?', services.map((s) => s.name).sort());
     const service = services.find((s) => s.name === serviceName);
     const queries = getv(service, 'queries', []);

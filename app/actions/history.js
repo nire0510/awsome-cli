@@ -3,7 +3,7 @@ import * as logger from '../utils/logger.js';
 import * as shell from '../utils/shell.js';
 import * as ui from '../utils/ui.js';
 
-export async function run(options) {
+export async function run() {
   try {
     const history = await History.getAll();
 
@@ -16,7 +16,6 @@ export async function run(options) {
       console.table(results);
     }
     else {
-      console.log();
       console.log('😕 Your history is empty.');
     }
   }

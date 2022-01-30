@@ -10,7 +10,7 @@ export default class Service {
           return reject(err);
         }
 
-        resolve(JSON.parse(data).services);
+        resolve(JSON.parse(data.toString()).services);
       });
     });
   }
@@ -23,6 +23,6 @@ export default class Service {
 
   static async update() {
     return files
-      .download(config.uris.github.services, config.uris.app.services);
+      .download(config.uris.github.servicesJson, config.uris.app.services);
   }
 }

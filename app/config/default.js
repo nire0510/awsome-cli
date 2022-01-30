@@ -13,6 +13,7 @@ export default {
     github: {
       respository: 'https://github.com/nire0510/awsome-cli',
       services: 'https://github.com/nire0510/awsome-cli/blob/master/app/data/services.json',
+      servicesJson: 'https://raw.githubusercontent.com/nire0510/awsome-cli/master/app/data/services.json',
     }
   },
 };

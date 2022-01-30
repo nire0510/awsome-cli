@@ -43,6 +43,15 @@
       ]
     },
     {
+      "name": "CloudFront",
+      "queries": [
+        {
+          "description": "Distributions",
+          "command": "aws cloudfront list-distributions --query 'DistributionList.Items[*].{ Id:Id, Status:Status, DomainName:DomainName, Enabled:Enabled }' --output json"
+        }
+      ]
+    },
+    {
       "name": "CodeDeploy",
       "queries": [
         {
@@ -94,15 +103,32 @@
       "queries": [
         {
           "description": "Instances types & IP addresses",
-          "command": "aws ec2 describe-instances --query 'Reservations[].Instances[].{ Id:InstanceId, Name: Tags[?Key==`Name`].Value | [0], Type:InstanceType, PrivateIpAddress:PrivateIpAddress, PublicIpAddress:PublicIpAddress }' --output json"
+          "command": "aws ec2 describe-instances --query 'Reservations[].Instances[].{ InstanceId:InstanceId, Name:Tags[?Key==`Name`].Value | [0], Type:InstanceType, PrivateIpAddress:PrivateIpAddress, PublicIpAddress:PublicIpAddress }' --output json"
         },
         {
           "description": "Instances VPCs & subnets",
-          "command": "aws ec2 describe-instances --query 'Reservations[].Instances[].{ Id:InstanceId, Name: Tags[?Key==`Name`].Value | [0], VPC:VpcId, Subnet:SubnetId }' --output json"
+          "command": "aws ec2 describe-instances --query 'Reservations[].Instances[].{ InstanceId:InstanceId, Name:Tags[?Key==`Name`].Value | [0], VPC:VpcId, Subnet:SubnetId }' --output json"
         },
         {
           "description": "Instances security groups",
-          "command": "aws ec2 describe-instances --query 'Reservations[].Instances[].{ Id:InstanceId, Name: Tags[?Key==`Name`].Value | [0], SecurityGroupIds:SecurityGroups[*].GroupId, SecurityGroupNames:SecurityGroups[*].GroupName }' --output json"
+          "command": "aws ec2 describe-instances --query 'Reservations[].Instances[].{ InstanceId:InstanceId, Name:Tags[?Key==`Name`].Value | [0], SecurityGroupIds:SecurityGroups[*].GroupId, SecurityGroupNames:SecurityGroups[*].GroupName }' --output json"
+        },
+        {
+          "description": "Instances which have stopped & their reason",
+          "command": "aws ec2 describe-instances --filters Name=instance-state-name,Values=stopped --query 'Reservations[].Instances[].{ InstanceId:InstanceId, Name:Tags[?Key==`Name`].Value | [0], StateTransitionReason:StateTransitionReason }' --output json"
+        },
+        {
+          "description": "Key pairs",
+          "command": "aws ec2 describe-key-pairs --query 'KeyPairs[].{ KeyPairId:KeyPairId, KeyName:KeyName }' --output json"
+        }
+      ]
+    },
+    {
+      "name": "IAM",
+      "queries": [
+        {
+          "description": "Users",
+          "command": "aws iam list-users --query 'Users[].{ UserId:UserId, UserName:UserName, CreateDate:CreateDate, PasswordLastUsed:PasswordLastUsed }' --output json"
         }
       ]
     },
@@ -132,8 +158,20 @@
       "name": "S3",
       "queries": [
         {
-          "description": "Bucket contents",
-          "command": "aws s3 ls"
+          "description": "Folder content",
+          "command": "aws s3api list-objects --bucket {BucketName} --prefix {FolderPath} --query 'Contents[*].{ Key:Key, Size:Size, LastModified:LastModified}'",
+          "variables": [
+            {
+              "name": "BucketName",
+              "description": "Bucket name?",
+              "type": "text"
+            },
+            {
+              "name": "FolderPath",
+              "description": "Folder path?",
+              "type": "text"
+            }
+          ]
         }
       ]
     },
