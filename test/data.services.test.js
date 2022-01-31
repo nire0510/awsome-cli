@@ -36,3 +36,25 @@ test('each service with variables has a variables array', () => {
 
   expect(queriesWithVariables.every((q) => Array.isArray(q.variables) && q.variables.length)).toBeTruthy();
 });
+
+test('each variable has one of the following types: rawlist, list, text', () => {
+  const variables = data.services.reduce((a, c) => a.concat(c.queries.reduce((a1, c1) => a1.concat(c1.variables || []), [])), []);
+
+  expect(variables.every((v) => ['rawlist', 'list', 'text'].includes(v.type))).toBeTruthy();
+});
+
+test('each variable of types list/rawlist has either a command or an items property', () => {
+  const variables = data.services.reduce((a, c) => a.concat(c.queries.reduce((a1, c1) => a1.concat(c1.variables || []), [])), []);
+
+  expect(variables
+    .filter((v) => v.type === 'list' || v.type === 'rawlist')
+    .every((v) => typeof v.command === 'string' || Array.isArray(v.items))).toBeTruthy();
+});
+
+test('each variable with command reference should contain 3 parts in command', () => {
+  const variables = data.services.reduce((a, c) => a.concat(c.queries.reduce((a1, c1) => a1.concat(c1.variables || []), [])), []);
+
+  expect(variables
+    .filter((v) => v.type === 'list' || v.type === 'rawlist' && v.command && !v.command.startsWith('aws '))
+    .every((v) => v.command.split(';').length === 3)).toBeTruthy();
+});

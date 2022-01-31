@@ -27,7 +27,7 @@
       "queries": [
         {
           "description": "Data catalogs",
-          "command": "aws athena list-data-catalogs --query 'DataCatalogsSummary[]'"
+          "command": "aws athena list-data-catalogs --query 'DataCatalogsSummary[].{ CatalogName:CatalogName }'"
         },
         {
           "description": "Databases",
@@ -37,7 +37,7 @@
               "name": "CatalogName",
               "description": "Catalog name?",
               "type": "list",
-              "command": "aws athena list-data-catalogs --query 'DataCatalogsSummary[].CatalogName'"
+              "command": "Athena;Data catalogs;CatalogName"
             }
           ]
         }
@@ -62,7 +62,7 @@
               "name": "DistributionId",
               "description": "Distribution Id?",
               "type": "rawlist",
-              "command": "aws cloudfront list-distributions --query 'DistributionList.Items[].Id'"
+              "command": "CloudFront;Distributions;Id"
             }
           ]
         }
@@ -73,35 +73,35 @@
       "queries": [
         {
           "description": "Applications",
-          "command": "aws deploy list-applications --query 'applications[]'"
+          "command": "aws deploy list-applications --query 'applications[].{ Name:@ }'"
         },
         {
           "description": "Deployment groups",
-          "command": "aws deploy list-deployment-groups --application-name {ApplicationName} --query 'deploymentGroups[]'",
+          "command": "aws deploy list-deployment-groups --application-name {ApplicationName} --query 'deploymentGroups[].{ Name:@ }'",
           "variables": [
             {
               "name": "ApplicationName",
               "description": "Application name?",
               "type": "list",
-              "command": "CodeDeploy;Applications"
+              "command": "CodeDeploy;Applications;Name"
             }
           ]
         },
         {
           "description": "Deployments",
-          "command": "aws deploy list-deployments --application-name {ApplicationName} --deployment-group-name {DeploymentGroupName} --query 'deployments[]'",
+          "command": "aws deploy list-deployments --application-name {ApplicationName} --deployment-group-name {DeploymentGroupName} --query 'deployments[].{ Id:@ }'",
           "variables": [
             {
               "name": "ApplicationName",
               "description": "Application name?",
               "type": "list",
-              "command": "CodeDeploy;Applications"
+              "command": "CodeDeploy;Applications;Name"
             },
             {
               "name": "DeploymentGroupName",
               "description": "Deployment group name?",
               "type": "list",
-              "command": "CodeDeploy;Deployment groups"
+              "command": "CodeDeploy;Deployment groups;Name"
             }
           ]
         },
@@ -113,19 +113,19 @@
               "name": "ApplicationName",
               "description": "Application name?",
               "type": "list",
-              "command": "CodeDeploy;Applications"
+              "command": "CodeDeploy;Applications;Name"
             },
             {
               "name": "DeploymentGroupName",
               "description": "Deployment group name?",
               "type": "list",
-              "command": "CodeDeploy;Deployment groups"
+              "command": "CodeDeploy;Deployment groups;Name"
             },
             {
               "name": "DeploymentId",
               "description": "Deployment Id?",
               "type": "list",
-              "command": "CodeDeploy;Deployments"
+              "command": "CodeDeploy;Deployments;Id"
             }
           ]
         }
@@ -161,35 +161,35 @@
       "queries": [
         {
           "description": "Clusters",
-          "command": "aws ecs list-clusters --query 'clusterArns[]'"
+          "command": "aws ecs list-clusters --query 'clusterArns[].{ Name:@ }'"
         },
         {
           "description": "Cluster services",
-          "command": "aws ecs list-services --cluster {Cluster} --query 'serviceArns[]'",
+          "command": "aws ecs list-services --cluster {Cluster} --query 'serviceArns[].{ Name:@ }'",
           "variables": [
             {
               "name": "Cluster",
               "description": "Cluster?",
               "type": "list",
-              "command": "ECS;Clusters"
+              "command": "ECS;Clusters;Name"
             }
           ]
         },
         {
           "description": "Service tasks",
-          "command": "aws ecs list-tasks --cluster {Cluster} --service {Service} --query 'taskArns[]'",
+          "command": "aws ecs list-tasks --cluster {Cluster} --service {Service} --query 'taskArns[].{ Name:@ }'",
           "variables": [
             {
               "name": "Cluster",
               "description": "Cluster?",
               "type": "list",
-              "command": "ECS;Clusters"
+              "command": "ECS;Clusters;Name"
             },
             {
               "name": "Service",
               "description": "Service?",
               "type": "list",
-              "command": "ECS;Cluster services"
+              "command": "ECS;Cluster services;Name"
             }
           ]
         }
@@ -235,7 +235,7 @@
       "queries": [
         {
           "description": "Buckets",
-          "command": "aws s3api list-buckets --query 'Buckets[].Name'"
+          "command": "aws s3api list-buckets --query 'Buckets[].{ Name:Name }'"
         },
         {
           "description": "Folder content",
@@ -245,7 +245,7 @@
               "name": "BucketName",
               "description": "Bucket name?",
               "type": "rawlist",
-              "command": "S3;Buckets"
+              "command": "S3;Buckets;Name"
             },
             {
               "name": "FolderPath",
@@ -261,7 +261,7 @@
       "queries": [
         {
           "description": "Subscriptions",
-          "command": "aws sns list-subscriptions --query 'Subscriptions[]'"
+          "command": "aws sns list-subscriptions --query 'Subscriptions[]"
         }
       ]
     }
