@@ -15,7 +15,7 @@ export default class Service {
     });
   }
 
-  static async findByName(name) {
+  static async getByName(name) {
     const services = await Service.getAll();
 
     return services.find((s) => s.name === name);

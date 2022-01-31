@@ -6,7 +6,9 @@ import * as files from '../utils/files.js';
 import History from '../models/history.js';
 import * as logger from '../utils/logger.js';
 import Profile from '../models/profile.js';
+import Query from '../models/query.js';
 import Service from '../models/service.js';
+import Variable from '../models/variable.js';
 import * as shell from '../utils/shell.js';
 import * as ui from '../utils/ui.js';
 
@@ -20,23 +22,38 @@ export async function run(options, predefinedServices) {
       spinner.stop();
     }
 
-    const services = Array.isArray(predefinedServices) && predefinedServices.length ?
-      predefinedServices :
-      await Service.getAll() || [];
-    const { serviceName } = await ui.prompt('list', 'serviceName', 'AWS service?', services.map((s) => s.name).sort());
-    const service = services.find((s) => s.name === serviceName);
-    const queries = getv(service, 'queries', []);
-    const { queryDescription } = await ui.prompt('list', 'queryDescription', 'Service query?', queries.map((q) => q.description).sort());
-    const query = queries.find((q) => q.description === queryDescription);
-    const variables = getv(query, 'variables', []);
-    const values = await variables.reduce((a, c) => a.then((results) => ui.prompt(c.type, c.name, c.description, undefined).then((r) => ({ ...r, ...results }))), Promise.resolve({}));
     const profiles = await Profile.getAll();
     const { profile } = await ui.prompt('list', 'profile', 'AWS profile?', profiles);
+    const services = Array.isArray(predefinedServices) && predefinedServices.length ?
+      predefinedServices :
+      await Service.getAll();
+    const { serviceName } = await ui.prompt('rawlist', 'serviceName', 'AWS service?', services.map((s) => s.name).sort());
+    const queries = await Query.getByService(serviceName);
+    const { queryDescription } = await ui.prompt('rawlist', 'queryDescription', 'Service query?', queries.map((q) => q.description).sort());
+    const query = await Query.getByDescription(serviceName, queryDescription);
+    const variables = await Variable.getByQuery(serviceName, queryDescription);
+    const values = await variables.reduce((a, c) => a.then(async (variableValues) => {
+      let items = c.items;
+
+      if ((c.type === 'list' || c.type === 'rawlist') && c.command) {
+        const command = c.command.startsWith('aws ') ?
+          c.command :
+          (await Query.getByDescription(c.command.split(';')[0], c.command.split(';')[1])).command;
+        const commandWithValues = `${Object.keys(variableValues).reduce((a1, c1) => a1.replace(`{${c1}}`, `${variableValues[c1]}`), command)} --output json --profile ${profile}`;
+        const response = await shell.execute(commandWithValues, 'Querying AWS...');
+
+        items = JSON.parse(response);
+      }
+
+      return ui
+        .prompt(c.type, c.name, c.description, items)
+        .then((r) => ({ ...r, ...variableValues }))
+    }), Promise.resolve({}));
     const title = `${serviceName} > ${queryDescription} (${profile})`;
     const displays = Display.getAll();
     const { display } = await ui.prompt('list', 'display', 'Query output?', displays);
     const command = getv(query, 'command', '');
-    const commandWithValues = `${Object.keys(values).reduce((a, c) => a.replace(`{${c}}`, `${values[c]}`), command)} --profile=${profile}`;
+    const commandWithValues = `${Object.keys(values).reduce((a, c) => a.replace(`{${c}}`, `${values[c]}`), command)} --output json --profile ${profile}`;
     const output = await shell.execute(commandWithValues, 'Querying AWS...');
     const results = output ? JSON.parse(output) : [];
 
