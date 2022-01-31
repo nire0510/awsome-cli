@@ -61,7 +61,7 @@
             {
               "name": "DistributionId",
               "description": "Distribution Id?",
-              "type": "rawlist",
+              "type": "list",
               "command": "CloudFront;Distributions;Id"
             }
           ]
@@ -244,13 +244,34 @@
             {
               "name": "BucketName",
               "description": "Bucket name?",
-              "type": "rawlist",
+              "type": "list",
               "command": "S3;Buckets;Name"
             },
             {
               "name": "FolderPath",
               "description": "Folder path?",
               "type": "text"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Secrets Manager",
+      "queries": [
+        {
+          "description": "Secrets",
+          "command": "aws secretsmanager list-secrets --query 'SecretList[].{ Name:Name, Description:Description, LastChangedDate:LastChangedDate }'"
+        },
+        {
+          "description": "Secret value",
+          "command": "aws secretsmanager get-secret-value --secret-id {SecretName} --query '[{ Name:Name, SecretString:SecretString }]'",
+          "variables": [
+            {
+              "name": "SecretName",
+              "description": "Secret name?",
+              "type": "list",
+              "command": "Secrets Manager;Secrets;Name"
             }
           ]
         }

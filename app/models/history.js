@@ -14,23 +14,26 @@ export default class History {
   }
 
   static getAll() {
-    return new Promise(async (resolve, reject) => {
+    return new Promise(async (resolve) => {
       if (!this.storage) {
         await this.init();
       }
 
-      resolve(this.storage.get('history'));
+      resolve(this.storage.get('history') || []);
     });
   }
 
   static async add(record) {
-    const history = await this.getAll() || [];
+    const history = await this.getAll();
     const similarCommandIndex = history.findIndex((c) => c.command === record.command);
 
     if (similarCommandIndex !== -1) {
       history.splice(similarCommandIndex, 1);
     }
-    history.push(record);
+    history.unshift({
+      ...record,
+      created: Date.now(),
+    });
     await this.storage.set('history', history.slice(0, 10));
   }
 }

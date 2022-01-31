@@ -4,7 +4,7 @@ import * as queriesAction from './queries.js';
 
 export async function run(term) {
   try {
-    const services = await Service.getAll() || [];
+    const services = await Service.getAll();
     const regex = new RegExp(term, 'i');
     const results = services.filter((service) =>
       regex.test(service.name) ||

@@ -23,31 +23,34 @@ export async function run(options, predefinedServices) {
     }
 
     const profiles = await Profile.getAll();
-    const { profile } = await ui.prompt('list', 'profile', 'AWS profile?', profiles);
+    const { profile } = profiles.length === 1 ?
+      { profile: profiles[0] } :
+      await ui.prompt('list', 'profile', 'AWS profile?', profiles);
     const services = Array.isArray(predefinedServices) && predefinedServices.length ?
       predefinedServices :
       await Service.getAll();
-    const { serviceName } = await ui.prompt('rawlist', 'serviceName', 'AWS service?', services.map((s) => s.name).sort());
+    const { serviceName } = await ui.prompt('list', 'serviceName', 'AWS service?', services.map((s) => s.name).sort());
     const queries = await Query.getByService(serviceName);
-    const { queryDescription } = await ui.prompt('rawlist', 'queryDescription', 'Service query?', queries.map((q) => q.description).sort());
+    const { queryDescription } = await ui.prompt('list', 'queryDescription', 'Service query?', queries.map((q) => q.description).sort());
     const query = await Query.getByDescription(serviceName, queryDescription);
     const variables = await Variable.getByQuery(serviceName, queryDescription);
-    const values = await variables.reduce((a, c) => a.then(async (variableValues) => {
-      let items = c.items;
-      const [ServiceName, QueryDescription, Key] = c.command.split(';');
+    const values = await variables.reduce((a, variable) => a.then(async (variableValues) => {
+      let items = variable.items;
 
-      if (['list', 'rawlist'].includes(c.type) && c.command) {
-        const command = c.command.startsWith('aws ') ?
-          c.command :
-          (await Query.getByDescription(ServiceName, QueryDescription)).command;
+      if (['list', 'rawlist'].includes(variable.type) && variable.command) {
+        const [serviceNameRef, queryDescriptionRef, keyRef] = variable.command.split(';');
+        const command = variable.command.startsWith('aws ') ?
+          variable.command :
+          (await Query.getByDescription(serviceNameRef, queryDescriptionRef)).command;
         const commandWithValues = `${Object.keys(variableValues).reduce((a1, c1) => a1.replace(`{${c1}}`, `${variableValues[c1]}`), command)} --output json --profile ${profile}`;
         const response = await shell.execute(commandWithValues, 'Querying AWS...');
 
-        items = JSON.parse(response);
+        items = JSON.parse(response)
+          .reduce((a1, c1) => a1.concat(c1[keyRef]), []);
       }
 
       return ui
-        .prompt(c.type, c.name, c.description, items.reduce((a1, c1) => a1.concat(c1[Key]), []))
+        .prompt(variable.type, variable.name, variable.description, items)
         .then((r) => ({ ...r, ...variableValues }))
     }), Promise.resolve({}));
     const title = `${serviceName} > ${queryDescription} (${profile})`;

@@ -10,7 +10,7 @@ export default class Query {
   static async getByService(serviceName) {
     const service = await Service.getByName(serviceName);
 
-    return (service || {}).queries || [];
+    return (service || {}).queries;
   }
 
   static async getByDescription(serviceName, queryDescription) {
