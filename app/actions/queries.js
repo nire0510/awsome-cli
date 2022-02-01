@@ -66,12 +66,14 @@ export async function run(options, predefinedServices) {
       command: commandWithValues,
     });
 
+    if (options.command) {
+      console.log(`\n${commandWithValues}`);
+    }
+
     if (Array.isArray(results) && results.length > 0) {
       switch (display) {
         case 'Web':
-          const uri = files.exportHtml(config.uris.app.templates.grid, results, title);
-
-          ui.browse(uri);
+          ui.browse(files.exportHtml(config.uris.app.templates.grid, results, title));
           break;
         case 'Terminal':
         default:
