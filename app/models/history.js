@@ -21,7 +21,7 @@ export default class History {
 
       const history = await this.storage.get('history');
 
-      resolve(history);
+      resolve(history || []);
     });
   }
 
