@@ -19,7 +19,9 @@ export default class History {
         await this.init();
       }
 
-      resolve(this.storage.get('history') || []);
+      const history = await this.storage.get('history');
+
+      resolve(history);
     });
   }
 
