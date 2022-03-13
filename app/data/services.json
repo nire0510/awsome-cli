@@ -281,8 +281,24 @@
       "name": "SNS",
       "queries": [
         {
+          "description": "Topics",
+          "command": "aws sns list-topics --query 'Topics[]'"
+        },
+        {
           "description": "Subscriptions",
-          "command": "aws sns list-subscriptions --query 'Subscriptions[]"
+          "command": "aws sns list-subscriptions --query 'Subscriptions[]'"
+        },
+        {
+          "description": "Topic subscriptions",
+          "command": "aws sns list-subscriptions-by-topic --topic-arn {TopicArn} --query 'Subscriptions[].{SubscriptionArn:SubscriptionArn, Protocol:Protocol, Endpoint:Endpoint}'",
+          "variables": [
+            {
+              "name": "TopicArn",
+              "description": "Topic Arn?",
+              "type": "list",
+              "command": "SNS;Topics;TopicArn"
+            }
+          ]
         }
       ]
     }

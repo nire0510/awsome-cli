@@ -2,3 +2,4 @@ node_modules
 error.log
 links.txt
 .node-persist
+.DS_Store
