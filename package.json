@@ -1,6 +1,6 @@
 {
   "name": "@nire0510/awsome-cli",
-  "version": "1.14.5",
+  "version": "1.14.6",
   "homepage": "https://github.com/nire0510/awsome-cli/",
   "license": "GPL-3.0",
   "description": "Get information from your AWS accounts like a boss",
@@ -30,14 +30,14 @@
   },
   "readme": "README.md",
   "dependencies": {
-    "commander": "^8.3.0",
+    "commander": "^9.4.0",
     "getv": "^1.0.6",
-    "inquirer": "^8.2.1",
+    "inquirer": "^9.1.0",
     "node-persist": "^3.1.0",
-    "ora": "^6.1.0"
+    "ora": "^6.1.2"
   },
   "devDependencies": {
-    "husky": "^7.0.4",
-    "jest": "^27.5.1"
+    "husky": "^8.0.1",
+    "jest": "^28.1.3"
   }
 }
