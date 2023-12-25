@@ -260,7 +260,7 @@
           ]
         },
         {
-          "description": "Task details",
+          "description": "Task network details",
           "command": "aws ecs describe-tasks --cluster {Cluster} --task {Task} --query 'tasks[].attachments[].details[]'",
           "variables": [
             {
