@@ -230,26 +230,20 @@
           ]
         },
         {
-          "description": "Service status",
-          "command": "aws ecs describe-services --cluster {Cluster} --service {Service} --query 'services[].{ serviceName:serviceName, status:status, desiredCount:desiredCount, runningCount:runningCount, pendingCount:pendingCount }'",
+          "description": "Cluster tasks",
+          "command": "aws ecs list-tasks --cluster {Cluster} --query 'taskArns[].{ Name:@ }'",
           "variables": [
             {
               "name": "Cluster",
               "description": "Cluster?",
               "type": "list",
               "command": "ECS;Clusters;Name"
-            },
-            {
-              "name": "Service",
-              "description": "Service?",
-              "type": "list",
-              "command": "ECS;Cluster services;Name"
             }
           ]
         },
         {
-          "description": "Service tasks",
-          "command": "aws ecs list-tasks --cluster {Cluster} --service {Service} --query 'taskArns[].{ Name:@ }'",
+          "description": "Service status",
+          "command": "aws ecs describe-services --cluster {Cluster} --service {Service} --query 'services[].{ serviceName:serviceName, status:status, desiredCount:desiredCount, runningCount:runningCount, pendingCount:pendingCount }'",
           "variables": [
             {
               "name": "Cluster",
@@ -270,10 +264,16 @@
           "command": "aws ecs describe-tasks --cluster {Cluster} --task {Task} --query 'tasks[].attachments[].details[]'",
           "variables": [
             {
+              "name": "Cluster",
+              "description": "Cluster?",
+              "type": "list",
+              "command": "ECS;Clusters;Name"
+            },
+            {
               "name": "Task",
               "description": "Task?",
               "type": "list",
-              "command": "ECS;Service tasks;Name"
+              "command": "ECS;Cluster tasks;Name"
             }
           ]
         }
