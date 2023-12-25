@@ -270,12 +270,6 @@
           "command": "aws ecs describe-tasks --cluster {Cluster} --task {Task} --query 'tasks[].attachments[].details[]'",
           "variables": [
             {
-              "name": "Cluster",
-              "description": "Cluster?",
-              "type": "list",
-              "command": "ECS;Clusters;Name"
-            },
-            {
               "name": "Task",
               "description": "Task?",
               "type": "list",
