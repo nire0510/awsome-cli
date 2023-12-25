@@ -264,6 +264,24 @@
               "command": "ECS;Cluster services;Name"
             }
           ]
+        },
+        {
+          "description": "Task details",
+          "command": "aws ecs describe-tasks  --cluster {Cluster} --task {Task} --cluster {Cluster} --query 'taskArns[].{ Name:@ }'",
+          "variables": [
+            {
+              "name": "Cluster",
+              "description": "Cluster?",
+              "type": "list",
+              "command": "ECS;Clusters;Name"
+            },
+            {
+              "name": "Task",
+              "description": "Task?",
+              "type": "list",
+              "command": "ECS;Service tasks;Name"
+            }
+          ]
         }
       ]
     },
