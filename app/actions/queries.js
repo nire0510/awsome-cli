@@ -26,9 +26,7 @@ export async function run(options, predefinedServices) {
     const { profile } = profiles.length === 1 ?
       { profile: profiles[0] } :
       await ui.prompt('list', 'profile', 'AWS profile?', profiles);
-    const services = Array.isArray(predefinedServices) && predefinedServices.length ?
-      predefinedServices :
-      await Service.getAll();
+    const services = await Service.getAll();
     const { serviceName } = await ui.prompt('list', 'serviceName', 'AWS service?', services.map((s) => s.name).sort());
     const queries = await Query.getByService(serviceName);
     const { queryDescription } = await ui.prompt('list', 'queryDescription', 'Service query?', queries.map((q) => q.description).sort());
