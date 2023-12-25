@@ -267,7 +267,7 @@
         },
         {
           "description": "Task details",
-          "command": "aws ecs describe-tasks  --cluster {Cluster} --task {Task} --cluster {Cluster} --query 'taskArns[].{ Name:@ }'",
+          "command": "aws ecs describe-tasks --cluster {Cluster} --task {Task} --query 'tasks[].attachments[].details[]'",
           "variables": [
             {
               "name": "Cluster",
