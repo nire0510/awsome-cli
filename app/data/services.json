@@ -44,6 +44,15 @@
       ]
     },
     {
+      "name": "CloudFormation",
+      "queries": [
+        {
+          "description": "Stacks",
+          "command": "aws cloudformation list-stacks --query 'StackSummaries[]'"
+        }
+      ]
+    },
+    {
       "name": "CloudFront",
       "queries": [
         {
