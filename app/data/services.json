@@ -230,14 +230,20 @@
           ]
         },
         {
-          "description": "Cluster tasks",
-          "command": "aws ecs list-tasks --cluster {Cluster} --query 'taskArns[].{ Name:@ }'",
+          "description": "Service tasks",
+          "command": "aws ecs list-tasks --cluster {Cluster} --service {Service} --query 'taskArns[].{ Name:@ }'",
           "variables": [
             {
               "name": "Cluster",
               "description": "Cluster?",
               "type": "list",
               "command": "ECS;Clusters;Name"
+            },
+            {
+              "name": "Service",
+              "description": "Service?",
+              "type": "list",
+              "command": "ECS;Cluster services;Name"
             }
           ]
         },
@@ -270,10 +276,16 @@
               "command": "ECS;Clusters;Name"
             },
             {
+              "name": "Service",
+              "description": "Service?",
+              "type": "list",
+              "command": "ECS;Cluster services;Name"
+            },
+            {
               "name": "Task",
               "description": "Task?",
               "type": "list",
-              "command": "ECS;Cluster tasks;Name"
+              "command": "ECS;Service tasks;Name"
             }
           ]
         }
