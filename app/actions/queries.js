@@ -43,10 +43,17 @@ export async function run(options, predefinedServices) {
           variable.command :
           (await Query.getByDescription(serviceNameRef, queryDescriptionRef)).command;
         const commandWithValues = `${Object.keys(variableValues).reduce((a1, c1) => a1.replace(`{${c1}}`, `${variableValues[c1]}`), command)} --output json --profile ${profile}`;
-        const response = await shell.execute(commandWithValues, 'Querying AWS...');
 
-        items = JSON.parse(response)
-          .reduce((a1, c1) => a1.concat(c1[keyRef]), []);
+        if (/\{[\w]+?\}/.test(command)) {
+          console.log('😕 Some of the placeholders havn\'t been replaced:\n', commandWithValues);
+          process.exit(1);
+        }
+        else {
+          const response = await shell.execute(commandWithValues, 'Querying AWS...');
+
+          items = JSON.parse(response)
+            .reduce((a1, c1) => a1.concat(c1[keyRef]), []);
+        }
       }
 
       return ui
