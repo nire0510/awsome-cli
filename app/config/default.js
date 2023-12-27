@@ -2,6 +2,9 @@ import path from 'path';
 import appRoot from '../../root.js';
 
 export default {
+  settings: {
+    updateInterval: 1000 * 60 * 60 * 24 * 1, // 1 day
+  },
   uris: {
     app: {
       logs: path.join(appRoot, '/logs'),

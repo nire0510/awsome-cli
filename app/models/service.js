@@ -15,6 +15,18 @@ export default class Service {
     });
   }
 
+  static get lastUpdated() {
+    return new Promise((resolve, reject) => {
+      fs.stat(config.uris.app.services, (err, stats) => {
+        if (err) {
+          return reject(err);
+        }
+
+        resolve(stats.mtime);
+      });
+    });
+  }
+
   static async getByName(name) {
     const services = await Service.getAll();
 

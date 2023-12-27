@@ -14,7 +14,9 @@ import * as ui from '../utils/ui.js';
 
 export async function run(options, predefinedServices) {
   try {
-    if (options.update) {
+    const lastUpdated = await Service.lastUpdated;
+
+    if (options.update || Date.now() - lastUpdated > config.settings.updateInterval) {
       const spinner = ora();
 
       spinner.start('Updating queries from repository...');
@@ -49,7 +51,7 @@ export async function run(options, predefinedServices) {
 
       return ui
         .prompt(variable.type, variable.name, variable.description, items)
-        .then((r) => ({ ...r, ...variableValues }))
+        .then((r) => ({ ...r, ...variableValues }));
     }), Promise.resolve({}));
     const title = `${serviceName} > ${queryDescription} (${profile})`;
     const displays = Display.getAll();
