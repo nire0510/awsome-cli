@@ -19,13 +19,8 @@ export function info(message, data) {
 export function error(message, data) {
   const filepath = path.join(config.uris.app.logs, 'error.log');
 
-  console.log(data);
-  appendToLog(filepath, 'ERROR', `${message} ${typeof data === 'object' ? JSON.stringify(data) : data}`);
-}
-
-export function log(message) {
   console.error(`🔴 ${message}`);
-  info(message);
+  appendToLog(filepath, 'ERROR', `${message} ${typeof data === 'object' ? JSON.stringify(data) : data}`);
 }
 
 export function warn(message, data) {

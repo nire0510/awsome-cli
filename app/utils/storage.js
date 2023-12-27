@@ -1,10 +1,12 @@
+import os from 'os';
 import storage from 'node-persist';
 
 export default class Storage {
   stoarge;
-
   constructor() {
-    this.storage = storage.create();
+    this.storage = storage.create({
+      dir: `${os.tmpdir()}/awsome/`,
+    });
   }
 
   async init(options) {

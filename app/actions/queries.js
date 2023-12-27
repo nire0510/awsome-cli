@@ -1,3 +1,4 @@
+import chalk from 'chalk';
 import getv from 'getv';
 import ora from 'ora';
 import config from '../config/default.js';
@@ -44,15 +45,15 @@ export async function run(options, predefinedServices) {
           (await Query.getByDescription(serviceNameRef, queryDescriptionRef)).command;
         const commandWithValues = `${Object.keys(variableValues).reduce((a1, c1) => a1.replace(`{${c1}}`, `${variableValues[c1]}`), command)} --output json --profile ${profile}`;
 
-        if (/\{[\w]+?\}/.test(command)) {
-          console.log('😕 Some of the placeholders havn\'t been replaced:\n', commandWithValues);
-          process.exit(1);
-        }
-        else {
+        try {
           const response = await shell.execute(commandWithValues, 'Querying AWS...');
 
           items = JSON.parse(response)
             .reduce((a1, c1) => a1.concat(c1[keyRef]), []);
+        }
+        catch (error) {
+          logger.error(`An error has occurred while trying to execute the following command:\n${chalk.red(commandWithValues)}\n(Have all placeholdres been replaced?)`);
+          process.exit(1);
         }
       }
 
