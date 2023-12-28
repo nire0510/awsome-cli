@@ -48,7 +48,7 @@
       "queries": [
         {
           "description": "Stacks",
-          "command": "aws cloudformation list-stacks --query 'StackSummaries[]'"
+          "command": "aws cloudformation list-stacks --query 'StackSummaries[].{ StackName:StackName, LastUpdatedTime:LastUpdatedTime, StackStatus:StackStatus}'"
         }
       ]
     },
