@@ -28,7 +28,8 @@ export default async function run(args) {
 
   program
     .command('history')
-    .description('Rerun a query you ran recently')
+    .option('-l, --latest', 'Rerun latest query')
+    .description('View and execute recently run queries')
     .action(history.run);
 
   program
