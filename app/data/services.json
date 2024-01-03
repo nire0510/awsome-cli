@@ -216,6 +216,23 @@
         {
           "description": "Key pairs",
           "command": "aws ec2 describe-key-pairs --query 'KeyPairs[].{ KeyPairId:KeyPairId, KeyName:KeyName }'"
+        },
+        {
+          "description": "Resource by public IP",
+          "command": "aws ec2 describe-network-interfaces --filters 'Name={{Type}},Values={{IP}}' --profile traveluro_qa --query 'KeyPairs[].{ KeyPairId:KeyPairId, KeyName:KeyName }'",
+          "variables": [
+            {
+              "name": "Type",
+              "description": "IP Type?",
+              "type": "list",
+              "items": ["addresses.private-ip-address", "addresses.association.public-ip"]
+            },
+            {
+              "name": "IP",
+              "description": "IP address?",
+              "type": "text"
+            }
+          ]
         }
       ]
     },
