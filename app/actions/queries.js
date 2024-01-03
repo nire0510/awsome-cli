@@ -44,7 +44,7 @@ export async function run(options, predefinedServices) {
           const query = variable.command.startsWith('aws ') ?
             variable.command :
             await Query.getByDescription(serviceNameRef, queryDescriptionRef);
-          const command = `${query.command}${query.query && !options.raw ? ` --query '${query.query}'` : ''}`;
+          const command = options.raw ? query.command : `${query.command}${query.query ? ` --query '${query.query}'` : ''}`;
           const commandWithValues = `${Object.keys(variableValues).reduce((a1, c1) => a1.replace(`{${c1}}`, `${variableValues[c1]}`), command)} --output json --profile ${profile}`;
 
           try {
@@ -66,8 +66,8 @@ export async function run(options, predefinedServices) {
     }), Promise.resolve({}));
     const title = `${serviceName} > ${queryDescription} (${profile})`;
     const displays = Display.getAll();
-    const { display } = await ui.prompt('list', 'display', 'Query output?', displays);
-    const command = `${query.command}${query.query && !options.raw ? ` --query '${query.query}'` : ''}`;
+    const { display } = options.raw ? { display: 'Raw' } : await ui.prompt('list', 'display', 'Query output?', displays);
+    const command = options.raw ? query.command : `${query.command}${query.query ? ` --query '${query.query}'` : ''}`;
     const commandWithValues = `${Object.keys(values).reduce((a, c) => a.replace(`{${c}}`, `${values[c]}`), command)} --output json --profile ${profile}`;
     const output = await shell.execute(commandWithValues, 'Querying AWS...');
     const results = output ? JSON.parse(output) : [];
@@ -81,22 +81,20 @@ export async function run(options, predefinedServices) {
       console.log(`\n${commandWithValues}`);
     }
 
-    if (options.raw || Array.isArray(results) && results.length > 0) {
-      if (options.raw) {
-        console.log();
-        console.log(JSON.stringify(results, null, 2));
-      }
-      else {
-        switch (display) {
-          case 'Web':
-            ui.browse(files.exportHtml(config.uris.app.templates.grid, results, title));
-            break;
-          case 'Terminal':
-          default:
-            console.log();
-            console.table(results);
-            break;
-        }
+    if (options.raw || (Array.isArray(results) && results.length > 0)) {
+      switch (display) {
+        case 'Web':
+          ui.browse(files.exportHtml(config.uris.app.templates.grid, results, title));
+          break;
+        case 'Raw':
+          console.log();
+          console.log(JSON.stringify(results, null, 2));
+          break;
+        case 'Terminal':
+        default:
+          console.log();
+          console.table(results);
+          break;
       }
     }
     else {
