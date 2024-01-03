@@ -8,7 +8,7 @@ export async function run(term) {
     const regex = new RegExp(term, 'i');
     const results = services.filter((service) =>
       regex.test(service.name) ||
-        service.queries.some((q) => regex.test(q.name) || regex.test(q.description)));
+        service.queries.some((q) => regex.test(q.description)));
 
     if (results.length > 0) {
       queriesAction.run({}, results);

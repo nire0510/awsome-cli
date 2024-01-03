@@ -1,5 +1,4 @@
 import chalk from 'chalk';
-import getv from 'getv';
 import ora from 'ora';
 import config from '../config/default.js';
 import Display from '../models/display.js';
@@ -29,7 +28,7 @@ export async function run(options, predefinedServices) {
     const { profile } = profiles.length === 1 ?
       { profile: profiles[0] } :
       await ui.prompt('list', 'profile', 'AWS profile?', profiles);
-    const services = await Service.getAll();
+    const services = predefinedServices || await Service.getAll();
     const { serviceName } = await ui.prompt('list', 'serviceName', 'AWS service?', services.map((s) => s.name).sort());
     const queries = await Query.getByService(serviceName);
     const { queryDescription } = await ui.prompt('list', 'queryDescription', 'Service query?', queries.map((q) => q.description).sort());
@@ -44,7 +43,7 @@ export async function run(options, predefinedServices) {
           const query = variable.command.startsWith('aws ') ?
             variable.command :
             await Query.getByDescription(serviceNameRef, queryDescriptionRef);
-          const command = options.raw ? query.command : `${query.command}${query.query ? ` --query '${query.query}'` : ''}`;
+          const command = `${query.command}${query.query ? ` --query '${query.query}'` : ''}`;
           const commandWithValues = `${Object.keys(variableValues).reduce((a1, c1) => a1.replace(`{${c1}}`, `${variableValues[c1]}`), command)} --output json --profile ${profile}`;
 
           try {
@@ -66,40 +65,33 @@ export async function run(options, predefinedServices) {
     }), Promise.resolve({}));
     const title = `${serviceName} > ${queryDescription} (${profile})`;
     const displays = Display.getAll();
-    const { display } = options.raw ? { display: 'Raw' } : await ui.prompt('list', 'display', 'Query output?', displays);
-    const command = options.raw ? query.command : `${query.command}${query.query ? ` --query '${query.query}'` : ''}`;
-    const commandWithValues = `${Object.keys(values).reduce((a, c) => a.replace(`{${c}}`, `${values[c]}`), command)} --output json --profile ${profile}`;
-    const output = await shell.execute(commandWithValues, 'Querying AWS...');
+    const { display } = await ui.prompt('list', 'display', 'Query output?', displays, 'Terminal');
+    const command = `${Object.keys(values).reduce((a, c) => a.replace(`{${c}}`, `${values[c]}`), query.command)}${query.query && display !== 'Raw' ? ` --query '${query.query}'` : ''} --output json --profile ${profile}`;
+    const output = await shell.execute(command, 'Querying AWS...');
     const results = output ? JSON.parse(output) : [];
 
     History.add({
       title,
-      command: commandWithValues,
+      command,
     });
 
     if (options.command) {
-      console.log(`\n${commandWithValues}`);
+      console.log(`\n${command}`);
     }
 
-    if (options.raw || (Array.isArray(results) && results.length > 0)) {
-      switch (display) {
-        case 'Web':
-          ui.browse(files.exportHtml(config.uris.app.templates.grid, results, title));
-          break;
-        case 'Raw':
-          console.log();
-          console.log(JSON.stringify(results, null, 2));
-          break;
-        case 'Terminal':
-        default:
-          console.log();
-          console.table(results);
-          break;
-      }
-    }
-    else {
-      console.log();
-      console.log('😕 No results found.');
+    switch (display) {
+      case 'Web':
+        ui.browse(files.exportHtml(config.uris.app.templates.grid, results, title));
+        break;
+      case 'Raw':
+        console.log();
+        console.log(JSON.stringify(results, null, 2));
+        break;
+      case 'Terminal':
+      default:
+        console.log();
+        console.table(results);
+        break;
     }
   }
   catch (error) {

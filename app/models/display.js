@@ -1,5 +1,5 @@
 export default class Display {
   static getAll() {
-    return ['Terminal', 'Web'];
+    return ['Raw', 'Terminal', 'Web'];
   }
 }
