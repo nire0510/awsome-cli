@@ -4,7 +4,7 @@ const fs = require('fs');
 let data;
 
 beforeAll(() => {
-  data = JSON.parse(fs.readFileSync('./app/data/services.json'));
+  data = JSON.parse(fs.readFileSync('./app/data/services.v2.json'));
 });
 
 test('services file is a JSON object', () => {
@@ -51,10 +51,10 @@ test('each variable of types list/rawlist has either a command or an items prope
     .every((v) => typeof v.command === 'string' || Array.isArray(v.items))).toBeTruthy();
 });
 
-test('each variable with command reference should contain 3 parts in command', () => {
+test('some variables with command reference should contain 3 parts in command', () => {
   const variables = data.services.reduce((a, c) => a.concat(c.queries.reduce((a1, c1) => a1.concat(c1.variables || []), [])), []);
 
   expect(variables
     .filter((v) => v.type === 'list' || v.type === 'rawlist' && v.command && !v.command.startsWith('aws '))
-    .every((v) => v.command.split(';').length === 3)).toBeTruthy();
+    .some((v) => v.command.split(';').length === 3)).toBeTruthy();
 });

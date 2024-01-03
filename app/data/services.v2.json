@@ -1,0 +1,465 @@
+{
+  "services": [
+    {
+      "name": "Amplify",
+      "queries": [
+        {
+          "description": "Amplify applications gateways",
+          "command": "aws amplify list-apps"
+        }
+      ]
+    },
+    {
+      "name": "API Gateway",
+      "queries": [
+        {
+          "description": "API gateways",
+          "command": "aws apigateway get-rest-apis",
+          "query": "items[].{ Id:id, Name:name, Description:description }"
+        },
+        {
+          "description": "API gateway domain names",
+          "command": "aws apigateway get-domain-names",
+          "query": "items[].{ DomainName:domainName, RegionalDomainName:regionalDomainName }"
+        }
+      ]
+    },
+    {
+      "name": "Athena",
+      "queries": [
+        {
+          "description": "Data catalogs",
+          "command": "aws athena list-data-catalogs",
+          "query": "DataCatalogsSummary[].{ CatalogName:CatalogName }"
+        },
+        {
+          "description": "Databases",
+          "command": "aws athena list-databases --catalog-name {CatalogName}",
+          "query": "DatabaseList[].{ Name:Name, Description:Description }",
+          "variables": [
+            {
+              "name": "CatalogName",
+              "description": "Catalog name?",
+              "type": "list",
+              "command": "Athena;Data catalogs;CatalogName"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "CloudFormation",
+      "queries": [
+        {
+          "description": "Stacks",
+          "command": "aws cloudformation list-stacks",
+          "query": "StackSummaries[].{ StackName:StackName, LastUpdatedTime:LastUpdatedTime, StackStatus:StackStatus}"
+        }
+      ]
+    },
+    {
+      "name": "CloudFront",
+      "queries": [
+        {
+          "description": "Distributions",
+          "command": "aws cloudfront list-distributions",
+          "query": "DistributionList.Items[].{ Id:Id, DomainName:DomainName, Enabled:Enabled, Status:Status }"
+        },
+        {
+          "description": "Distribution aliases",
+          "command": "aws cloudfront list-distributions",
+          "query": "DistributionList.Items[].{ Id:Id, DomainName:DomainName, Aliases:Aliases.Items }"
+        },
+        {
+          "description": "Distribution invalidations",
+          "command": "aws cloudfront list-invalidations --distribution-id {DistributionId}",
+          "query": "InvalidationList.Items[]",
+          "variables": [
+            {
+              "name": "DistributionId",
+              "description": "Distribution Id?",
+              "type": "list",
+              "command": "CloudFront;Distributions;Id"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "CodeDeploy",
+      "queries": [
+        {
+          "description": "Applications",
+          "command": "aws deploy list-applications",
+          "query": "applications[].{ Name:@ }"
+        },
+        {
+          "description": "Deployment groups",
+          "command": "aws deploy list-deployment-groups --application-name {ApplicationName}",
+          "query": "deploymentGroups[].{ Name:@ }",
+          "variables": [
+            {
+              "name": "ApplicationName",
+              "description": "Application name?",
+              "type": "list",
+              "command": "CodeDeploy;Applications;Name"
+            }
+          ]
+        },
+        {
+          "description": "Deployments",
+          "command": "aws deploy list-deployments --application-name {ApplicationName} --deployment-group-name {DeploymentGroupName}",
+          "query": "deployments[].{ Id:@ }",
+          "variables": [
+            {
+              "name": "ApplicationName",
+              "description": "Application name?",
+              "type": "list",
+              "command": "CodeDeploy;Applications;Name"
+            },
+            {
+              "name": "DeploymentGroupName",
+              "description": "Deployment group name?",
+              "type": "list",
+              "command": "CodeDeploy;Deployment groups;Name"
+            }
+          ]
+        },
+        {
+          "description": "Deployment instances",
+          "command": "aws deploy list-deployment-instances --deployment-id {DeploymentId}",
+          "query": "instancesList[].{ Id:@ }",
+          "variables": [
+            {
+              "name": "ApplicationName",
+              "description": "Application name?",
+              "type": "list",
+              "command": "CodeDeploy;Applications;Name"
+            },
+            {
+              "name": "DeploymentGroupName",
+              "description": "Deployment group name?",
+              "type": "list",
+              "command": "CodeDeploy;Deployment groups;Name"
+            },
+            {
+              "name": "DeploymentId",
+              "description": "Deployment Id?",
+              "type": "list",
+              "command": "CodeDeploy;Deployments;Id"
+            }
+          ]
+        },
+        {
+          "description": "Deployment info",
+          "command": "aws deploy get-deployment --deployment-id {DeploymentId}",
+          "query": "deploymentInfo.[{ DeploymentId:deploymentId, ApplicationName:applicationName, DeploymentGroupName:deploymentGroupName, Status:status, CreateTime:createTime, CompleteTime:completeTime }]",
+          "variables": [
+            {
+              "name": "ApplicationName",
+              "description": "Application name?",
+              "type": "list",
+              "command": "CodeDeploy;Applications;Name"
+            },
+            {
+              "name": "DeploymentGroupName",
+              "description": "Deployment group name?",
+              "type": "list",
+              "command": "CodeDeploy;Deployment groups;Name"
+            },
+            {
+              "name": "DeploymentId",
+              "description": "Deployment Id?",
+              "type": "list",
+              "command": "CodeDeploy;Deployments;Id"
+            }
+          ]
+        },
+        {
+          "description": "Deployment instance lifecycle events",
+          "command": "aws deploy get-deployment-instance --deployment-id {DeploymentId} --instance-id {InstanceId}",
+          "query": "instanceSummary.lifecycleEvents[].{ LifecycleEventName:lifecycleEventName, Status:status, Message:diagnostics.message, Log:diagnostics.logTail, CreateTime:startTime, CompleteTime:endTime }",
+          "variables": [
+            {
+              "name": "ApplicationName",
+              "description": "Application name?",
+              "type": "list",
+              "command": "CodeDeploy;Applications;Name"
+            },
+            {
+              "name": "DeploymentGroupName",
+              "description": "Deployment group name?",
+              "type": "list",
+              "command": "CodeDeploy;Deployment groups;Name"
+            },
+            {
+              "name": "DeploymentId",
+              "description": "Deployment Id?",
+              "type": "list",
+              "command": "CodeDeploy;Deployments;Id"
+            },
+            {
+              "name": "InstanceId",
+              "description": "Instance Id?",
+              "type": "list",
+              "command": "CodeDeploy;Deployment instances;Id"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "EC2",
+      "queries": [
+        {
+          "description": "Instances types & IP addresses",
+          "command": "aws ec2 describe-instances",
+          "query": "Reservations[].Instances[].{ InstanceId:InstanceId, Name:Tags[?Key==`Name`].Value | [0], Type:InstanceType, PrivateIpAddress:PrivateIpAddress, PublicIpAddress:PublicIpAddress }"
+        },
+        {
+          "description": "Instances VPCs & subnets",
+          "command": "aws ec2 describe-instances",
+          "query": "Reservations[].Instances[].{ InstanceId:InstanceId, Name:Tags[?Key==`Name`].Value | [0], VPC:VpcId, Subnet:SubnetId }"
+        },
+        {
+          "description": "Instances security groups",
+          "command": "aws ec2 describe-instances",
+          "query": "Reservations[].Instances[].{ InstanceId:InstanceId, Name:Tags[?Key==`Name`].Value | [0], SecurityGroupIds:SecurityGroups[].GroupId, SecurityGroupNames:SecurityGroups[].GroupName }"
+        },
+        {
+          "description": "Instances which have stopped & their reason",
+          "command": "aws ec2 describe-instances --filters Name=instance-state-name,Values=stopped",
+          "query": "Reservations[].Instances[].{ InstanceId:InstanceId, Name:Tags[?Key==`Name`].Value | [0], StateTransitionReason:StateTransitionReason }"
+        },
+        {
+          "description": "Key pairs",
+          "command": "aws ec2 describe-key-pairs",
+          "query": "KeyPairs[].{ KeyPairId:KeyPairId, KeyName:KeyName }"
+        },
+        {
+          "description": "Resource by IP address",
+          "command": "aws ec2 describe-network-interfaces --filters 'Name={Type},Values={IP}'",
+          "query": "NetworkInterfaces[].{ AvailabilityZone:AvailabilityZone, VpcId:VpcId, SubnetId:SubnetId, Status:Status }",
+          "variables": [
+            {
+              "name": "Type",
+              "description": "IP Type?",
+              "type": "list",
+              "items": ["addresses.private-ip-address", "addresses.association.public-ip"]
+            },
+            {
+              "name": "IP",
+              "description": "IP address?",
+              "type": "text"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ECS",
+      "queries": [
+        {
+          "description": "Clusters",
+          "command": "aws ecs list-clusters",
+          "query": "clusterArns[].{ Name:@ }"
+        },
+        {
+          "description": "Cluster services",
+          "command": "aws ecs list-services --cluster {Cluster}",
+          "query": "serviceArns[].{ Name:@ }",
+          "variables": [
+            {
+              "name": "Cluster",
+              "description": "Cluster?",
+              "type": "list",
+              "command": "ECS;Clusters;Name"
+            }
+          ]
+        },
+        {
+          "description": "Service tasks",
+          "command": "aws ecs list-tasks --cluster {Cluster} --service {Service}",
+          "query": "taskArns[].{ Name:@ }",
+          "variables": [
+            {
+              "name": "Cluster",
+              "description": "Cluster?",
+              "type": "list",
+              "command": "ECS;Clusters;Name"
+            },
+            {
+              "name": "Service",
+              "description": "Service?",
+              "type": "list",
+              "command": "ECS;Cluster services;Name"
+            }
+          ]
+        },
+        {
+          "description": "Service status",
+          "command": "aws ecs describe-services --cluster {Cluster} --service {Service}",
+          "query": "services[].{ serviceName:serviceName, status:status, desiredCount:desiredCount, runningCount:runningCount, pendingCount:pendingCount }",
+          "variables": [
+            {
+              "name": "Cluster",
+              "description": "Cluster?",
+              "type": "list",
+              "command": "ECS;Clusters;Name"
+            },
+            {
+              "name": "Service",
+              "description": "Service?",
+              "type": "list",
+              "command": "ECS;Cluster services;Name"
+            }
+          ]
+        },
+        {
+          "description": "Task networking",
+          "command": "aws ecs describe-tasks --cluster {Cluster} --task {Task}",
+          "query": "tasks[].attachments[].details[]",
+          "variables": [
+            {
+              "name": "Cluster",
+              "description": "Cluster?",
+              "type": "list",
+              "command": "ECS;Clusters;Name"
+            },
+            {
+              "name": "Service",
+              "description": "Service?",
+              "type": "list",
+              "command": "ECS;Cluster services;Name"
+            },
+            {
+              "name": "Task",
+              "description": "Task?",
+              "type": "list",
+              "command": "ECS;Service tasks;Name"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "IAM",
+      "queries": [
+        {
+          "description": "Roles",
+          "command": "aws iam list-roles",
+          "query": "Roles[].{ RoleId:RoleId, RoleName:RoleName, CreateDate:CreateDate }"
+        },
+        {
+          "description": "Users",
+          "command": "aws iam list-users",
+          "query": "Users[].{ UserId:UserId, UserName:UserName, CreateDate:CreateDate, PasswordLastUsed:PasswordLastUsed }"
+        }
+      ]
+    },
+    {
+      "name": "RDS",
+      "queries": [
+        {
+          "description": "DB instances",
+          "command": "aws rds describe-db-instances",
+          "query": "DBInstances[].{ Id:DBInstanceIdentifier, Name: DBInstanceIdentifier, DBInstanceClass:DBInstanceClass, Engine:Engine, EngineVersion:EngineVersion, DBInstanceStatus:DBInstanceStatus, Storage:AllocatedStorage }"
+        },
+        {
+          "description": "DB instances addresses",
+          "command": "aws rds describe-db-instances",
+          "query": "DBInstances[].{ Id:DBInstanceIdentifier, Name: DBInstanceIdentifier, Endpoint:join(`:`, [Endpoint.Address, to_string(Endpoint.Port)]) }"
+        }
+      ]
+    },
+    {
+      "name": "Rout53",
+      "queries": [
+        {
+          "description": "Hosted zones",
+          "command": "aws route53 list-hosted-zones",
+          "query": "HostedZones[].{ Id:Id, Name:Name, ResourceRecordSetCount:ResourceRecordSetCount }"
+        }
+      ]
+    },
+    {
+      "name": "S3",
+      "queries": [
+        {
+          "description": "Buckets",
+          "command": "aws s3api list-buckets",
+          "query": "Buckets[].{ Name:Name }"
+        },
+        {
+          "description": "Folder content",
+          "command": "aws s3api list-objects --bucket {BucketName} --prefix {FolderPath}",
+          "query": "Contents[].{ Key:Key, Size:Size, LastModified:LastModified}",
+          "variables": [
+            {
+              "name": "BucketName",
+              "description": "Bucket name?",
+              "type": "list",
+              "command": "S3;Buckets;Name"
+            },
+            {
+              "name": "FolderPath",
+              "description": "Folder path?",
+              "type": "text"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Secrets Manager",
+      "queries": [
+        {
+          "description": "Secrets",
+          "command": "aws secretsmanager list-secrets",
+          "query": "SecretList[].{ Name:Name, Description:Description, LastChangedDate:LastChangedDate }"
+        },
+        {
+          "description": "Secret value",
+          "command": "aws secretsmanager get-secret-value --secret-id {SecretName}",
+          "query": "[{ Name:Name, SecretString:SecretString }]",
+          "variables": [
+            {
+              "name": "SecretName",
+              "description": "Secret name?",
+              "type": "list",
+              "command": "Secrets Manager;Secrets;Name"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "SNS",
+      "queries": [
+        {
+          "description": "Topics",
+          "command": "aws sns list-topics",
+          "query": "Topics[]"
+        },
+        {
+          "description": "Subscriptions",
+          "command": "aws sns list-subscriptions",
+          "query": "Subscriptions[]"
+        },
+        {
+          "description": "Topic subscriptions",
+          "command": "aws sns list-subscriptions-by-topic --topic-arn {TopicArn}",
+          "query": "Subscriptions[].{SubscriptionArn:SubscriptionArn, Protocol:Protocol, Endpoint:Endpoint}",
+          "variables": [
+            {
+              "name": "TopicArn",
+              "description": "Topic Arn?",
+              "type": "list",
+              "command": "SNS;Topics;TopicArn"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

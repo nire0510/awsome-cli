@@ -16,6 +16,7 @@ export default async function run(args) {
     .version(pkg.version, '-v, --version')
     .option('-u, --update', 'Download the latest services & queries')
     .option('-c, --command', 'Show the command')
+    .option('-r, --raw', 'Print raw output')
     .description(pkg.description)
     .action(queries.run);
 

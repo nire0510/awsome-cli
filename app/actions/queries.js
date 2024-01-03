@@ -38,22 +38,25 @@ export async function run(options, predefinedServices) {
     const values = await variables.reduce((a, variable) => a.then(async (variableValues) => {
       let items = variable.items;
 
-      if (['list', 'rawlist'].includes(variable.type) && variable.command) {
-        const [serviceNameRef, queryDescriptionRef, keyRef] = variable.command.split(';');
-        const command = variable.command.startsWith('aws ') ?
-          variable.command :
-          (await Query.getByDescription(serviceNameRef, queryDescriptionRef)).command;
-        const commandWithValues = `${Object.keys(variableValues).reduce((a1, c1) => a1.replace(`{${c1}}`, `${variableValues[c1]}`), command)} --output json --profile ${profile}`;
+      if (['list', 'rawlist'].includes(variable.type)) {
+        if (variable.command) {
+          const [serviceNameRef, queryDescriptionRef, keyRef] = variable.command.split(';');
+          const query = variable.command.startsWith('aws ') ?
+            variable.command :
+            await Query.getByDescription(serviceNameRef, queryDescriptionRef);
+          const command = `${query.command}${query.query && !options.raw ? ` --query '${query.query}'` : ''}`;
+          const commandWithValues = `${Object.keys(variableValues).reduce((a1, c1) => a1.replace(`{${c1}}`, `${variableValues[c1]}`), command)} --output json --profile ${profile}`;
 
-        try {
-          const response = await shell.execute(commandWithValues, 'Querying AWS...');
+          try {
+            const response = await shell.execute(commandWithValues, 'Querying AWS...');
 
-          items = JSON.parse(response)
-            .reduce((a1, c1) => a1.concat(c1[keyRef]), []);
-        }
-        catch (error) {
-          logger.error(`An error has occurred while trying to execute the following command:\n${chalk.red(commandWithValues)}\n(Have all placeholdres been replaced?)`);
-          process.exit(1);
+            items = JSON.parse(response)
+              .reduce((a1, c1) => a1.concat(c1[keyRef]), []);
+          }
+          catch (error) {
+            logger.error(`An error has occurred while trying to execute the following command:\n${chalk.red(commandWithValues)}\n(Have all placeholdres been replaced?)`);
+            process.exit(1);
+          }
         }
       }
 
@@ -64,7 +67,7 @@ export async function run(options, predefinedServices) {
     const title = `${serviceName} > ${queryDescription} (${profile})`;
     const displays = Display.getAll();
     const { display } = await ui.prompt('list', 'display', 'Query output?', displays);
-    const command = getv(query, 'command', '');
+    const command = `${query.command}${query.query && !options.raw ? ` --query '${query.query}'` : ''}`;
     const commandWithValues = `${Object.keys(values).reduce((a, c) => a.replace(`{${c}}`, `${values[c]}`), command)} --output json --profile ${profile}`;
     const output = await shell.execute(commandWithValues, 'Querying AWS...');
     const results = output ? JSON.parse(output) : [];
@@ -78,16 +81,22 @@ export async function run(options, predefinedServices) {
       console.log(`\n${commandWithValues}`);
     }
 
-    if (Array.isArray(results) && results.length > 0) {
-      switch (display) {
-        case 'Web':
-          ui.browse(files.exportHtml(config.uris.app.templates.grid, results, title));
-          break;
-        case 'Terminal':
-        default:
-          console.log();
-          console.table(results);
-          break;
+    if (options.raw || Array.isArray(results) && results.length > 0) {
+      if (options.raw) {
+        console.log();
+        console.log(JSON.stringify(results, null, 2));
+      }
+      else {
+        switch (display) {
+          case 'Web':
+            ui.browse(files.exportHtml(config.uris.app.templates.grid, results, title));
+            break;
+          case 'Terminal':
+          default:
+            console.log();
+            console.table(results);
+            break;
+        }
       }
     }
     else {
