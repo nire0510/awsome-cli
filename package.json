@@ -1,6 +1,6 @@
 {
   "name": "@nire0510/awsome-cli",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "homepage": "https://github.com/nire0510/awsome-cli/",
   "license": "GPL-3.0",
   "description": "Get information from your AWS accounts like a boss",

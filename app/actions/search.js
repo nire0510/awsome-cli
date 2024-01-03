@@ -1,8 +1,8 @@
 import * as logger from '../utils/logger.js';
 import Service from '../models/service.js';
-import * as queriesAction from './queries.js';
+import * as queries from './queries.js';
 
-export async function run(term) {
+export async function run(term, options) {
   try {
     const services = await Service.getAll();
     const regex = new RegExp(term, 'i');
@@ -11,7 +11,7 @@ export async function run(term) {
         service.queries.some((q) => regex.test(q.description)));
 
     if (results.length > 0) {
-      queriesAction.run({}, results);
+      queries.run(Object.assign({}, { services: results }, options));
     }
     else {
       console.log('😕 No results found.');
