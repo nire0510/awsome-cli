@@ -218,8 +218,8 @@
           "command": "aws ec2 describe-key-pairs --query 'KeyPairs[].{ KeyPairId:KeyPairId, KeyName:KeyName }'"
         },
         {
-          "description": "Resource by public IP",
-          "command": "aws ec2 describe-network-interfaces --filters 'Name={Type},Values={IP}' --profile traveluro_qa --query 'KeyPairs[].{ KeyPairId:KeyPairId, KeyName:KeyName }'",
+          "description": "Resource by IP address",
+          "command": "aws ec2 describe-network-interfaces --filters 'Name={Type},Values={IP}' --query 'NetworkInterfaces[].{ AvailabilityZone:AvailabilityZone, VpcId:VpcId, SubnetId:SubnetId, Status:Status }'",
           "variables": [
             {
               "name": "Type",
