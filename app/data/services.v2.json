@@ -214,7 +214,7 @@
         {
           "description": "Instances types & IP addresses",
           "command": "aws ec2 describe-instances",
-          "query": "Reservations[].Instances[].{ InstanceId:InstanceId, Name:Tags[?Key==`Name`].Value | [0], Type:InstanceType, PrivateIpAddress:PrivateIpAddress, PublicIpAddress:PublicIpAddress }"
+          "query": "Reservations[].Instances[].{ InstanceId:InstanceId, Name:Tags[?Key==`Name`].Value | [0], Type:InstanceType, PrivateIpAddress:PrivateIpAddress, PublicIpAddress:PublicIpAddress, PublicDnsName:PublicDnsName }"
         },
         {
           "description": "Instances VPCs & subnets",
